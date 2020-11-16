@@ -34,7 +34,9 @@
   "kk" 'kill-buffer
   "kw" 'delete-window
   )
+(setq evil-leader/in-all-states t)
 (global-evil-leader-mode)
+
 
 ;; theme
 (load-theme 'solarized-light t)
