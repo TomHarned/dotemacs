@@ -1,0 +1,8 @@
+/home/theuser/.emacs.d/test.org
+/home/theuser/.emacs.d/#test.org#
+/home/theuser/acme_fonts.txt
+/home/theuser/#acme_fonts.txt#
+/usr/bin/lein
+/usr/bin/#lein#
+/home/theuser/.emacs.d/config.el
+/home/theuser/.emacs.d/#config.el#
