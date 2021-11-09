@@ -317,3 +317,80 @@
 (add-hook 'text-mode-hook #'auto-fill-mode)
 (setq-default fill-column 80)
 (add-hook 'prog-mode-hook #'auto-fill-mode)
+(defun set-venv (env)
+   "Set a python venv from your default dir, i.e. '.virtualenvs'.
+    If you want to use another directory, use 'pyvenv-activate'
+    'env' is the name of your venv, i.e. the dir where it's stored"
+   (interactive (list (read-file-name "Select venv: " "~/.virtualenvs"
+nil nil nil)))
+   (setq env (expand-file-name env))
+   (pyvenv-activate env)
+   (setq venv-name (file-name-nondirectory
+                   (directory-file-name env)))
+   (message "Venv set to: %s" venv-name))
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; THIS NEEDS PROJECTILE FIRST ;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; (defun autoload-venv()
+;; see personal github for this
+
+;; Ivy don't use ^ to start
+(setq ivy-initial-inputs-alist nil)
+;;;;;;;;;;;;;;;;;;;;;;;
+
+;;  BACKUP Settings  ;;
+
+;;;;;;;;;;;;;;;;;;;;;;;
+
+
+
+(setq backup-directory-alist `(("." . "~/emacs_auto_backups")))
+
+(setq backup-by-copying t)
+
+(setq delete-old-versions t
+  kept-new-versions 6
+  kept-old-versions 2)
+
+(use-package projectile)
+
+(use-package general)
+
+(use-package vterm)
+
+;; NEW STUFF
+(if (fboundp 'blink-cursor-mode)
+    (blink-cursor-mode 0))
+(use-package doom-themes
+  :ensure t
+  :config
+  ;; Global settings (defaults)
+  (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
+        doom-themes-enable-italic t) ; if nil, italics is universally disabled
+  (load-theme 'doom-wilmersdorf)
+
+  ;; Enable flashing mode-line on errors
+  ;;(doom-themes-visual-bell-config)
+  ;; Enable custom neotree theme (all-the-icons must be installed!)
+  (doom-themes-neotree-config)
+  ;; or for treemacs users
+  (setq doom-themes-treemacs-theme "doom-atom") ; use "doom-colors" for less minimal icon theme
+  (doom-themes-treemacs-config)
+  ;; Corrects (and improves) org-mode's native fontification.
+  (doom-themes-org-config))
+
+;;(use-package simple-modeline
+ ;; :hook (after-init . simple-modeline-mode))
+
+(use-package mood-line
+  :hook (after-init . mood-line-mode))
+
+;; Load Keymappings
+(add-to-list 'load-path "~/.emacs.d/lisp")
+(load-library "keymappings.el")
+
+(provide 'config) ;; Config ends here
