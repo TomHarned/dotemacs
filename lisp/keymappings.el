@@ -48,7 +48,8 @@
   "h f" 'describe-function
   "h k" 'describe-key
   "h v" 'describe-variable
-  "h i" 'info
+  "h i" 'info-emacs-manual
+  "h I" 'info
 
   ;; Launching shells
 

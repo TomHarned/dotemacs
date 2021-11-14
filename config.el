@@ -270,6 +270,13 @@
   :config (when (memq window-system '(mac ns x))
             (exec-path-from-shell-initialize)))
 
+(use-package paredit)
+
+;; Clojure
+(use-package cider
+  :init
+  :ensure t)
+
 ;; Python (both v2 and v3)
 (use-package python
   :ensure nil
