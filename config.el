@@ -103,9 +103,9 @@
   (defun ian/set-default-font ()
     (interactive)
     (when (member "Consolas" (font-family-list))
-      (set-face-attribute 'default nil :family "Consolas"))
+      (set-face-attribute 'default nil :family "FiraCode"))
     (set-face-attribute 'default nil
-                        :height 120
+                        :height 110
                         :weight 'normal))
   :ensure nil
   :config
@@ -140,8 +140,10 @@
  :config
   (setq custom-file (concat user-emacs-directory "to-be-dumped.el")))
 
+
+
 (add-to-list 'custom-theme-load-path (concat user-emacs-directory "themes/"))
-(load-theme 'wilmersdorf t) ; an orginal theme created by me.
+;;(load-theme 'wilmersdorf t nil)
 
 (use-package dashboard
   :config
@@ -154,8 +156,8 @@
 (use-package highlight-numbers
   :hook (prog-mode . highlight-numbers-mode))
 
-(use-package highlight-escape-sequences
-  :hook (prog-mode . hes-mode))
+;;(use-package highlight-escape-seqences
+;;  :hook (prog-mode . hes-mode))
 
 (use-package evil
   :diminish undo-tree-mode
@@ -219,16 +221,28 @@
   (define-key company-active-map (kbd "C-n") 'company-select-next)
   (define-key company-active-map (kbd "C-p") 'company-select-previous))
 
-(use-package flycheck :config (global-flycheck-mode +1))
+(use-package flycheck
+             :config (global-flycheck-mode +1))
 
-;; Org Mode
+(setq flycheck-check-syntax-automatically '(mode-enabled save))
+;;;;;;;;;;;;;;;;;;;;;;;;;
+;;    Org Mode   ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;
 (use-package org
   :hook ((org-mode . visual-line-mode)
          (org-mode . org-indent-mode)))
 
 (use-package org-bullets :hook (org-mode . org-bullets-mode))
 
-(setq org-todo-keywords '("TODO" "WAIT" "DEFERRED" "DONE"))
+(setq org-directory "~/org/")
+(setq org-agenda-files (list "~/org/"))
+(setq org-agenda-file-regexp "\\`[^.].*\\.org\\'")
+
+(setq org-capture-templates
+      '(("t" "Todo" entry (file+headline "~/org/todo.org" "Inbox")
+         "* TODO %?\n  %i\n  %a")
+        ("n" "Note" entry (file+datetree "~/org/notes.org")
+         "* %?\nEntered on %U\n  %i\n  %a")))
 
 ;; Open org links in a a different window
 (require 'org)
@@ -237,6 +251,36 @@
   (add-to-list 'org-link-frame-setup '(file . find-file-other-window)))
 
 (add-hook 'after-init-hook #'set-up-org-other-window)
+
+
+(setq org-todo-keywords '("TODO" "WAIT" "DEFERRED" "DONE"))
+
+(defun org-wait ()
+  (interactive)
+  (org-todo)
+  (org-todo))
+
+(defun org-defer ()
+  (interactive)
+  (org-todo)
+  (org-todo)
+  (org-todo))
+
+(defun org-done ()
+  (interactive)
+  (org-todo)
+  (org-todo)
+  (org-todo)
+  (org-todo))
+
+;; Stay in evil mode when working with org agendas
+(use-package evil-org
+  :ensure t
+  :after org
+  :hook (org-mode . (lambda () evil-org-mode))
+  :config
+  (require 'evil-org-agenda)
+  (evil-org-agenda-set-keys))
 
 ;;;;;;;;;;;;;;;;;
 ;; Markdown    ;;
@@ -270,29 +314,34 @@
   :config (when (memq window-system '(mac ns x))
             (exec-path-from-shell-initialize)))
 
-(use-package paredit)
-
-;; Clojure
-(use-package cider
-  :init
-  :ensure t)
-
 ;; Python (both v2 and v3)
 (use-package python
   :ensure nil
-  :config (setq python-indent-offset ian/indent-width))
+  :config (setq python-indent-offset ian/indent-width
+                python-indent-guess-indent-offset nil))
 
 ;; elpy
 (use-package elpy
   :ensure t
-  :init
-  (elpy-enable))
+  :init (elpy-enable)
+  :config
+  (setq elpy-rpc-python-command "python3"
+        python-shell-interpreter "ipython3"
+        python-shell-interpreter-args "--simple-prompt --pprint"
+        tab-width 4))
 
 (use-package lsp-pyright
   :ensure t
   :hook (python-mode . (lambda ()
                           (require 'lsp-pyright)
                           (lsp))))  ; or lsp-deferred
+
+;; Racket Mode
+(use-package racket-mode
+  :ensure t
+  :init)
+
+
 ;; Ripgrep
 (use-package rg)
 
@@ -324,9 +373,21 @@
 (add-hook 'text-mode-hook #'auto-fill-mode)
 (setq-default fill-column 80)
 (add-hook 'prog-mode-hook #'auto-fill-mode)
+
+;; Improved Copy/Paste
+(use-package xclip
+  :ensure t
+  :config
+  (xclip-mode))
+
+(custom-set-variables '(x-select-enable-clipboard t))
+
+
+;; Virtual Environments
 (defun set-venv (env)
    "Set a python venv from your default dir, i.e. '.virtualenvs'.
     If you want to use another directory, use 'pyvenv-activate'
+
     'env' is the name of your venv, i.e. the dir where it's stored"
    (interactive (list (read-file-name "Select venv: " "~/.virtualenvs"
 nil nil nil)))
@@ -336,68 +397,100 @@ nil nil nil)))
                    (directory-file-name env)))
    (message "Venv set to: %s" venv-name))
 
-
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; THIS NEEDS PROJECTILE FIRST ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; (defun autoload-venv()
-;; see personal github for this
 
 ;; Ivy don't use ^ to start
 (setq ivy-initial-inputs-alist nil)
-;;;;;;;;;;;;;;;;;;;;;;;
 
+(provide 'config) ;; Config ends here
+
+;;;;;;;;;;;;;;;;;;;;;;;
 ;;  BACKUP Settings  ;;
-
 ;;;;;;;;;;;;;;;;;;;;;;;
+(setq make-backup-files nil)
 
+;; (setq backup-directory-alist `(("." . "~/emacs_auto_backups")))
+;; (setq backup-by-copying t)
+;; (setq delete-old-versions t
+;;   kept-new-versions 6
+;;   kept-old-versions 2)
 
+;
+(use-package projectile
+  ;; for some reason you need this to work around a bug
+  :init (projectile-add-known-project "~/org")
+  :ensure t)
 
-(setq backup-directory-alist `(("." . "~/emacs_auto_backups")))
-
-(setq backup-by-copying t)
-
-(setq delete-old-versions t
-  kept-new-versions 6
-  kept-old-versions 2)
-
-(use-package projectile)
+(defun my-new-tab (tab-name)
+  "Create a tab and assign a user-supplied name"
+  (interactive "sTab name: ")
+  (tab-new)
+  (tab-rename tab-name)
+  (dashboard-refresh-buffer)
+  (message "Tab %s created" tab-name))
 
 (use-package general)
 
 (use-package vterm)
 
-;; NEW STUFF
+
+(defun scratch-buffer ()
+    (interactive)
+    (switch-to-buffer "*scratch*")
+    (fundamental-mode))
+
+(defun scratch-elisp-buffer ()
+    (interactive)
+    (switch-to-buffer "*scratch*")
+    (emacs-lisp-mode))
 (if (fboundp 'blink-cursor-mode)
-    (blink-cursor-mode 0))
+     (blink-cursor-mode 0))
+
 (use-package doom-themes
-  :ensure t
-  :config
-  ;; Global settings (defaults)
-  (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
-        doom-themes-enable-italic t) ; if nil, italics is universally disabled
-  (load-theme 'doom-wilmersdorf)
+   :ensure t
+   :config
+   ;; Global settings (defaults)
+   (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
+         doom-themes-enable-italic t) ; if nil, italics is universally disabled
+   (load-theme 'doom-wilmersdorf t nil)
 
-  ;; Enable flashing mode-line on errors
-  ;;(doom-themes-visual-bell-config)
-  ;; Enable custom neotree theme (all-the-icons must be installed!)
-  (doom-themes-neotree-config)
-  ;; or for treemacs users
-  (setq doom-themes-treemacs-theme "doom-atom") ; use "doom-colors" for less minimal icon theme
-  (doom-themes-treemacs-config)
-  ;; Corrects (and improves) org-mode's native fontification.
-  (doom-themes-org-config))
-
-;;(use-package simple-modeline
- ;; :hook (after-init . simple-modeline-mode))
+   ;; Enable flashing mode-line on errors
+   ;;(doom-themes-visual-bell-config)
+   ;; Enable custom neotree theme (all-the-icons must be installed!)
+   (doom-themes-neotree-config)
+   ;; or for treemacs users
+   (setq doom-themes-treemacs-theme "doom-atom") ; use "doom-colors" for less minimal icon theme
+   (doom-themes-treemacs-config)
+   ;; Corrects (and improves) org-mode's native fontification.
+   (doom-themes-org-config))
 
 (use-package mood-line
-  :hook (after-init . mood-line-mode))
+   :hook (after-init . mood-line-mode))
 
 ;; Load Keymappings
 (add-to-list 'load-path "~/.emacs.d/lisp")
+(load-library "functions.el")
 (load-library "keymappings.el")
 
-(provide 'config) ;; Config ends here
+(add-hook 'after-init-hook 'global-company-mode)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;                                   ;;
+;;          eshell                   ;;
+;;                                   ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; (setq eshell-prompt-regexp "^[^#$\n]*[#$] "
+;;       eshell-prompt-function
+;;       (lambda nil
+;;         (concat
+;;      "[" (user-login-name) "@" (system-name) " "
+;;      (if (string= (eshell/pwd) (getenv "HOME"))
+;;          "~" (eshell/basename (eshell/pwd)))
+;;      "]\n"
+;;      (if (= (user-uid) 0) "# " "λ "))))
+
+(provide 'config)
+;;; Config ends hereu
