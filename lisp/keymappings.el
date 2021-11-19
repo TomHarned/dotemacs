@@ -42,6 +42,9 @@
   "b p" 'previous-buffer
   "b s" 'th-goto-scratch-buffer
   "b S" 'th-goto-scratch-buffer-here
+  "b m" '(:ignore t :which-key "Bookmarks") ;
+  "b m l" 'bookmark-bmenu-list
+  "b m s" 'bookmark-set
 
   ;;
   ;; Window Navigation

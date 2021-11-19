@@ -341,6 +341,11 @@
   :ensure t
   :init)
 
+;; Clojure cider
+(use-package clojure-mode)
+
+(use-package cider
+  :ensure t)
 
 ;; Ripgrep
 (use-package rg)
@@ -476,6 +481,7 @@ nil nil nil)))
 (load-library "keymappings.el")
 
 (add-hook 'after-init-hook 'global-company-mode)
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;                                   ;;
