@@ -34,6 +34,7 @@
   "SPC" 'counsel-M-x
   ;; Buffer Navigation
   "b" '(:ignore t :which-key "Buffer") ;
+  "m" '(:ignore t :which-key "Local Leader") ;
   "b b" 'switch-to-buffer
   "b d" 'kill-current-buffer
   "b D" 'kill-buffer
@@ -153,19 +154,6 @@
   "t d" 'org-done
   )
 
-(local-lead-def
-  :states '(normal visual)
-  :keymaps '(lisp-mode-map emacs-lisp-mode-map racket-mode-map
-                           clojure-mode-map)
-  ;;"m" '(:ignore t :which-key "Lisp")
-  "m f" '(:ignore t :which-key "Forward")
-  "f b" 'paredit-forward-barf-sexp
-  "f s" 'paredit-forward-slurp-sexp
-  "m b" '(:ignore t :which-key "Backward")
-  "b b" 'paredit-backward-barf-sexp
-  "b s" 'paredit-backward-slurp-sexp
-  ;; ...
-  )
 
 ;; elisp eval
 ;; ** Mode Keybindings
@@ -173,11 +161,17 @@
   :states '(normal visual)
   :keymaps '(lisp-mode-map emacs-lisp-mode-map)
   ;;"m" '(:ignore t :which-key "Lisp")
-  "m e" '(:ignore t :which-key "Evaluate Lisp")
+  "e" '(:ignore t :which-key "Evaluate Lisp")
   "e e" 'pp-eval-last-sexp
   ;;"e E" 'eval-expression
   "e d" 'eval-defun
   "e p" 'eval-print-last-sexp
+  "f" '(:ignore t :which-key "Forward")
+  "f b" 'paredit-forward-barf-sexp
+  "f s" 'paredit-forward-slurp-sexp
+  "b" '(:ignore t :which-key "Backward")
+  "b b" 'paredit-backward-barf-sexp
+  "b s" 'paredit-backward-slurp-sexp
   ;; ...
   )
 
@@ -186,12 +180,18 @@
   :states '(normal visual)
   :keymaps '(racket-mode-map)
   ;;"m" '(:ignore t :which-key "Lisp")
-  "m e" '(:ignore t :which-key "Racket Evaluate")
-  "m s" '(:ignore t :which-key "Racket Send")
+  "e" '(:ignore t :which-key "Racket Evaluate")
+  "s" '(:ignore t :which-key "Racket Send")
   "e e" 'racket-eval-last-sexp
   "s d" 'racket-send-definition
   "s r" 'racket-send-region
   "s s" 'racket-send-last-sexp
+  "f" '(:ignore t :which-key "Forward")
+  "f b" 'paredit-forward-barf-sexp
+  "f s" 'paredit-forward-slurp-sexp
+  "b" '(:ignore t :which-key "Backward")
+  "b b" 'paredit-backward-barf-sexp
+  "b s" 'paredit-backward-slurp-sexp
   ;; ...
   )
 
@@ -200,14 +200,20 @@
   :states '(normal visual)
   :keymaps '(clojure-mode-map)
   ;;"m" '(:ignore t :which-key "Lisp")
-  "m e" '(:ignore t :which-key "Clojure Evaluate")
-  "m s" '(:ignore t :which-key "Clojure Send")
-  "m p" '(:ignore t :which-key "Clojure Pretty Print")
+  "e" '(:ignore t :which-key "Clojure Evaluate")
+  "s" '(:ignore t :which-key "Clojure Send")
+  "p" '(:ignore t :which-key "Clojure Pretty Print")
   "e e" 'cider-eval-last-sexp
   "e d" 'cider-eval-defun-at-point
   "e r" 'cider-eval-region
   "p e" 'cider-pprint-eval-last-sexp
   "p p" 'cider-pprint-eval-last-sexp-to-comment
+  "f" '(:ignore t :which-key "Forward")
+  "f b" 'paredit-forward-barf-sexp
+  "f s" 'paredit-forward-slurp-sexp
+  "b" '(:ignore t :which-key "Backward")
+  "b b" 'paredit-backward-barf-sexp
+  "b s" 'paredit-backward-slurp-sexp
   ;; ...
   )
 
@@ -216,8 +222,8 @@
 (local-lead-def
   :states '(normal visual)
   :keymaps '(python-mode-map elpy-mode-map)
-  "m s" '(:ignore t :which-key "Send to Python")
-  "m d" '(:ignore t :which-key "Documentation")
+  "s" '(:ignore t :which-key "Send to Python")
+  "d" '(:ignore t :which-key "Documentation")
   "s l" 'elpy-shell-send-statement ;; Think "send-line"
   "s L" 'elpy-shell-send-statement-and-step-and-go
   "s r" 'elpy-shell-send-region-or-buffer
