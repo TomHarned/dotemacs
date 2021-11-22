@@ -475,6 +475,8 @@ nil nil nil)))
 (use-package mood-line
    :hook (after-init . mood-line-mode))
 
+(use-package paredit
+  :ensure t)
 ;; Load Keymappings
 (add-to-list 'load-path "~/.emacs.d/lisp")
 (load-library "functions.el")

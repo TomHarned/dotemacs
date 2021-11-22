@@ -153,7 +153,19 @@
   "t d" 'org-done
   )
 
-
+(local-lead-def
+  :states '(normal visual)
+  :keymaps '(lisp-mode-map emacs-lisp-mode-map racket-mode-map
+                           clojure-mode-map)
+  ;;"m" '(:ignore t :which-key "Lisp")
+  "m f" '(:ignore t :which-key "Forward")
+  "f b" 'paredit-forward-barf-sexp
+  "f s" 'paredit-forward-slurp-sexp
+  "m b" '(:ignore t :which-key "Backward")
+  "b b" 'paredit-backward-barf-sexp
+  "b s" 'paredit-backward-slurp-sexp
+  ;; ...
+  )
 
 ;; elisp eval
 ;; ** Mode Keybindings
@@ -180,6 +192,22 @@
   "s d" 'racket-send-definition
   "s r" 'racket-send-region
   "s s" 'racket-send-last-sexp
+  ;; ...
+  )
+
+;; Clojure
+(local-lead-def
+  :states '(normal visual)
+  :keymaps '(clojure-mode-map)
+  ;;"m" '(:ignore t :which-key "Lisp")
+  "m e" '(:ignore t :which-key "Clojure Evaluate")
+  "m s" '(:ignore t :which-key "Clojure Send")
+  "m p" '(:ignore t :which-key "Clojure Pretty Print")
+  "e e" 'cider-eval-last-sexp
+  "e d" 'cider-eval-defun-at-point
+  "e r" 'cider-eval-region
+  "p e" 'cider-pprint-eval-last-sexp
+  "p p" 'cider-pprint-eval-last-sexp-to-comment
   ;; ...
   )
 
