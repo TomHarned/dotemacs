@@ -145,6 +145,9 @@
 (add-to-list 'custom-theme-load-path (concat user-emacs-directory "themes/"))
 ;;(load-theme 'wilmersdorf t nil)
 
+(use-package tao-theme
+  :ensure t)
+
 (use-package dashboard
   :config
   (dashboard-setup-startup-hook)
@@ -460,7 +463,7 @@ nil nil nil)))
    ;; Global settings (defaults)
    (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
          doom-themes-enable-italic t) ; if nil, italics is universally disabled
-   (load-theme 'doom-wilmersdorf t nil)
+   (load-theme 'doom-one t nil)
 
    ;; Enable flashing mode-line on errors
    ;;(doom-themes-visual-bell-config)
