@@ -1,0 +1,17 @@
+;;;; Emacs Bookmark Format Version 1 ;;;; -*- coding: utf-8-emacs -*-
+;;; This format is meant to be slightly human-readable;
+;;; nevertheless, you probably don't want to edit it.
+;;; -*- End Of Bookmark File Format Version Stamp -*-
+(("emacs manual"
+ (front-context-string . "\n7.8 Continuatio")
+ (rear-context-string . "nes,  Up: Basic\n")
+ (position . 107848)
+ (filename . "/usr/local/share/info/emacs")
+ (info-node . "Continuation Lines")
+ (handler . Info-bookmark-jump))
+("org-capture-last-stored"
+ (filename . "~/.notes")
+ (front-context-string . "** TODO stuff \n ")
+ (rear-context-string)
+ (position . 9))
+)

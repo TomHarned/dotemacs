@@ -1,0 +1,30 @@
+
+(the-fuck)
+
+ 
+(sqrt 64)
+
+(identity "Hello")
+
+
+(foo "Tom")
+
+(defn foo
+  "I don't do a whole lot."
+  [x]
+  (println x "Hello, World!"))
+
+(foo "Tom")
+
+(defn foo
+  "I don't do a whole lot."
+  [x]
+  (println x "Hello, World!"))
+(ns)
+(*ns*)
+(+ 1 1 )
+(defn tom [] (println "Hi Tom"))
+(two-plus-two)
+quit
+(quit)
+(exit)
