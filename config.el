@@ -7,6 +7,9 @@
         frame-resize-pixelwise t
         default-directory "~/")
 
+(add-to-list 'package-archives
+  '("nongnu" . "https://elpa.nongnu.org/nongnu/"))
+
   (tool-bar-mode -1)
   (menu-bar-mode -1)
 
@@ -480,6 +483,13 @@ nil nil nil)))
 
 (use-package paredit
   :ensure t)
+
+(use-package geiser
+  :ensure t)
+
+(use-package geiser-chicken
+  :ensure t)
+
 ;; Load Keymappings
 (add-to-list 'load-path "~/.emacs.d/lisp")
 (load-library "functions.el")
@@ -487,6 +497,7 @@ nil nil nil)))
 
 (add-hook 'after-init-hook 'global-company-mode)
 
+;;(setq scheme-program-name "csi")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;                                   ;;

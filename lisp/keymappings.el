@@ -201,11 +201,11 @@
   :keymaps '(scheme-mode-map)
   ;;"m" '(:ignore t :which-key "Lisp")
   "s" '(:ignore t :which-key "Scheme Send")
-  "s e" 'scheme-send-last-sexp
-  "s d" 'scheme-send-definition
-  "s D" 'scheme-send-definition-and-go
-  "s r" 'scheme-send-region
-  "s R" 'scheme-send-region-and-go
+  "s e" 'geiser-eval-last-sexp
+  "s d" 'geiser-eval-definition
+  "s D" 'geiser-eval-definition-and-go
+  "s r" 'geiser-eval-region
+  "s R" 'geiser-eval-region-and-go
   "f" '(:ignore t :which-key "Forward")
   "f b" 'paredit-forward-barf-sexp
   "f s" 'paredit-forward-slurp-sexp
