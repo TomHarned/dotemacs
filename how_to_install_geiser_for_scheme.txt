@@ -1,0 +1,15 @@
+- install geiser in nongnu
+- you make have to do this via `M-x package-list-packages`
+1. Install the necessary support eggs.
+
+$ chicken-install -s apropos chicken-doc
+
+you’ll also need SRFI-18.
+
+$ chicken-install -s srfi-18
+
+2. Update the Chicken documentation database.
+
+
+$ cd `csi -R chicken.platform -p '(chicken-home)'`
+$ curl https://3e8.org/pub/chicken-doc/chicken-doc-repo-5.tgz | sudo tar zx
