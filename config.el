@@ -7,9 +7,6 @@
         frame-resize-pixelwise t
         default-directory "~/")
 
-(add-to-list 'package-archives
-  '("nongnu" . "https://elpa.nongnu.org/nongnu/"))
-
   (tool-bar-mode -1)
   (menu-bar-mode -1)
 
@@ -445,7 +442,9 @@ nil nil nil)))
 
 (use-package general)
 
-(use-package vterm)
+(use-package vterm
+    :load-path "/home/theuser/emacs-libvterm"
+    :ensure t)
 
 
 (defun scratch-buffer ()
@@ -484,11 +483,13 @@ nil nil nil)))
 (use-package paredit
   :ensure t)
 
-(use-package geiser
-  :ensure t)
+;; Scheme
+;; Set Chicken scheme as your default
+(if (string= system-type "berkeley-unix")
+    (setq scheme-program-name "chicken-csi -:c"))
 
-(use-package geiser-chicken
-  :ensure t)
+(if (eq system-type 'berkeley-unix)
+    (setq geiser-chicken-binary "chicken-csi"))
 
 ;; Load Keymappings
 (add-to-list 'load-path "~/.emacs.d/lisp")
@@ -497,8 +498,9 @@ nil nil nil)))
 
 (add-hook 'after-init-hook 'global-company-mode)
 
-;;(setq scheme-program-name "csi")
 
+(if (string= system-type "berkeley-unix")
+    (setenv "PS1" "${PWD##*/} λ "))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;                                   ;;
 ;;          eshell                   ;;
