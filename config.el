@@ -7,24 +7,26 @@
         frame-resize-pixelwise t
         default-directory "~/")
 
-  (tool-bar-mode -1)
-  (menu-bar-mode -1)
+(with-eval-after-load 'package (add-to-list 'package-archives '("nongnu" . "https://elpa.nongnu.org/nongnu/")))
+
+(tool-bar-mode -1)
+(menu-bar-mode -1)
 
   ;; better scrolling experience
-  (setq scroll-margin 0
-        scroll-conservatively 101 ; > 100
-        scroll-preserve-screen-position t
-        auto-window-vscroll nil)
+(setq scroll-margin 0
+      scroll-conservatively 101 ; > 100
+      scroll-preserve-screen-position t
+      auto-window-vscroll nil)
 
-  ;; line) numbers
-  (global-display-line-numbers-mode)
+;; line) numbers
+(global-display-line-numbers-mode)
 
-  ;; Always use spaces for indentation
-  (setq-default indent-tabs-mode nil
-                tab-width ian/indent-width)
+;; Always use spaces for indentation
+(setq-default indent-tabs-mode nil
+              tab-width ian/indent-width)
 
-  ;; Omit default startup screen
-  (setq inhibit-startup-screen t))
+;; Omit default startup screen
+(setq inhibit-startup-screen t))
 
 ;; The Emacs default split doesn't seem too intuitive for most users.
 (use-package emacs
@@ -498,6 +500,21 @@ nil nil nil)))
 
 (add-hook 'after-init-hook 'global-company-mode)
 
+;; MU4E
+
+;; these are actually the defaults
+   ;; saved messages
+(setq
+  mu4e-sent-folder   "/disroot/Sent"       ;; folder for sent messages
+  mu4e-drafts-folder "/disroot/Drafts"     ;; unfinished messages
+  mu4e-trash-folder  "/disroot/Trash"      ;; trashed messages
+  mu4e-refile-folder "/disroot/Archive")
+
+(setq mu4e-get-mail-command "mbsync -a")
+;; in seconds
+;;(setq mu4e-update-interval 10)
+
+;;(setq scheme-program-name "csi")
 
 (if (string= system-type "berkeley-unix")
     (setenv "PS1" "${PWD##*/} λ "))

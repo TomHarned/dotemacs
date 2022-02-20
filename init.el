@@ -45,5 +45,10 @@
 (require 'org)
 (org-babel-load-file (expand-file-name (concat user-emacs-directory "config.org")))
 
+
+(require 'mu4e)
+
+
 (provide 'init)
+
 ;;; init.el ends here

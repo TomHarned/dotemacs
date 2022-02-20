@@ -65,6 +65,7 @@
   "f" '(:ignore t :which-key "File") ;
   "f ," '(:ignore t :which-key "Other file commands") ;
   "f ." 'projectile-find-file
+  "f d" 'delete-backup-files
   "f f" 'counsel-find-file
   "f s" 'save-buffer
   "f S" 'write-file
