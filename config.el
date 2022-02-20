@@ -502,8 +502,7 @@ nil nil nil)))
 
 ;; MU4E
 
-;; these are actually the defaults
-   ;; saved messages
+;; Receiving mail
 (setq
   mu4e-sent-folder   "/disroot/Sent"       ;; folder for sent messages
   mu4e-drafts-folder "/disroot/Drafts"     ;; unfinished messages
@@ -511,13 +510,33 @@ nil nil nil)))
   mu4e-refile-folder "/disroot/Archive")
 
 (setq mu4e-get-mail-command "mbsync -a")
-;; in seconds
-;;(setq mu4e-update-interval 10)
+
+;; When set to nil, maial must me manually retrieved
+(setq mu4e-update-interval nil)
+
+;; Sending mail
+;; tell message-mode how to send mail
+(setq message-send-mail-function 'smtpmail-send-it)
+;; if our mail server lives at smtp.example.org; if you have a local
+;; mail-server, simply use 'localhost' here.
+
+(setq mu4e-sent-folder "/disroot/Sent"
+      ;; mu4e-sent-messages-behavior 'delete ;; Unsure how this should be configured
+      user-mail-address "irontom@disroot.org"
+      user-full-name "irontom"
+      smtpmail-local-domain (system-name)
+      smtpmail-smtp-user "irontom"
+      smtpmail-default-smtp-server "disroot.org"
+      smtpmail-smtp-server "disroot.org"
+      ;;smtpmail-stream-type 'starttls
+      smtpmail-smtp-service 587)
+;; 587 for smtp
+;; 465 for smtps
+(if (string= system-type "berkeley-unix")
+    (setenv "PS1" "${PWD##*/} λ "))
 
 ;;(setq scheme-program-name "csi")
 
-(if (string= system-type "berkeley-unix")
-    (setenv "PS1" "${PWD##*/} λ "))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;                                   ;;
 ;;          eshell                   ;;
