@@ -532,9 +532,72 @@ nil nil nil)))
       smtpmail-smtp-service 587)
 ;; 587 for smtp
 ;; 465 for smtps
+
+;; IRC/ERC
+
+;; Add SASL server to list of SASL servers (start a new list, if it did not exist)
+(use-package
+  erc
+  :ensure t)
+
+;; (add-to-list 'erc-sasl-server-regexp-list "irc\\.libera\\.chat")
+
+;; Redefine/Override the erc-login() function from the erc package, so that
+;; it now uses SASL
+(defun erc-login ()
+  "Perform user authentication at the IRC server. (PATCHED)"
+  (erc-log (format "login: nick: %s, user: %s %s %s :%s"
+           (erc-current-nick)
+           (user-login-name)
+           (or erc-system-name (system-name))
+           erc-session-server
+           erc-session-user-full-name))
+  (if erc-session-password
+      (erc-server-send (format "PASS %s" erc-session-password))
+    (message "Logging in without password"))
+  (when (and (featurep 'erc-sasl) (erc-sasl-use-sasl-p))
+    (erc-server-send "CAP REQ :sasl"))
+  (erc-server-send (format "NICK %s" (erc-current-nick)))
+  (erc-server-send
+   (format "USER %s %s %s :%s"
+       ;; hacked - S.B.
+       (if erc-anonymous-login erc-email-userid (user-login-name))
+       "0" "*"
+       erc-session-user-full-name))
+  (erc-update-mode-line))
+
+(use-package
+  password-store
+  :ensure t)
+
+
+(setq libera-pw
+      (if (string= system-type "gnu/linux")
+          (string-remove-suffix
+           "\n" (password-store--run "irc/libera"))
+        "TODO for BSD"))
+
+(setq erc-autojoin-channels-alist
+      '(("Libera.Chat"
+         "#emacs"
+         "#openbsd"
+         "#monero"
+         "#monero-community"
+         "#gemini")))
+
+(defun run-irc ()
+  (interactive)
+  (erc-tls
+   :server "irc.libera.chat"
+   :port 6697
+   :nick "irontom"
+   :full-name "irontom"
+   :password libera-pw
+   ))
+
+
 (if (string= system-type "berkeley-unix")
     (setenv "PS1" "${PWD##*/} λ "))
-
 ;;(setq scheme-program-name "csi")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

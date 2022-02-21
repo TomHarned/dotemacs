@@ -46,9 +46,10 @@
 (org-babel-load-file (expand-file-name (concat user-emacs-directory "config.org")))
 
 
+;; Require ERC-SASL package
+(require 'erc-sasl)
 (require 'mu4e)
-
-
+;; (add-to-list 'erc-sasl-server-regexp-list "irc\\.libera\\.chat")
 (provide 'init)
 
 ;;; init.el ends here
