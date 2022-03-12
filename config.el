@@ -527,6 +527,15 @@ nil nil nil)))
 
 ;; MU4E
 
+;; Wrap lines at 72 chars
+(defun th-mu4e-compose-mode-hook ()
+  (setq fill-column 72))
+
+(add-hook 'mu4e-compose-mode-hook 'th-mu4e-compose-mode-hook)
+
+;; avoid those UID erros
+(setq mu4e-change-filenames-when-moving t)
+
 ;; Receiving mail
 (setq
   mu4e-sent-folder   "/disroot/Sent"       ;; folder for sent messages
@@ -615,6 +624,7 @@ nil nil nil)))
          "#sql"
          "#chicken"
          "#scheme"
+         "#sr.ht"
          "#clojure"
          "#fsf"
          "#go-nuts")))
