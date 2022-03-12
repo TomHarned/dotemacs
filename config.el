@@ -7,7 +7,10 @@
         frame-resize-pixelwise t
         default-directory "~/")
 
-(with-eval-after-load 'package (add-to-list 'package-archives '("nongnu" . "https://elpa.nongnu.org/nongnu/")))
+  (with-eval-after-load
+      'package (add-to-list
+                'package-archives
+                '("nongnu" . "https://elpa.nongnu.org/nongnu/")))
 
 (tool-bar-mode -1)
 (menu-bar-mode -1)
@@ -362,6 +365,25 @@
   (setq ivy-use-virtual-buffers t)
 (setq enable-recursive-minibuffers t))
 
+;; Golang
+(use-package go-mode
+  :ensure t)
+
+;; Set up before-save hooks to format buffer and add/delete imports.
+(defun lsp-go-install-save-hooks ()
+  (add-hook 'before-save-hook #'lsp-format-buffer t t)
+  (add-hook 'before-save-hook #'lsp-organize-imports t t))
+
+(add-hook 'go-mode-hook #'lsp-go-install-save-hooks)
+
+;; Start LSP Mode and YASnippet mode
+(add-hook 'go-mode-hook #'lsp-deferred)
+(add-hook 'go-mode-hook #'yas-minor-mode)
+
+;; This environment variable is set to "on" by default. Turn it off to enable
+;; jumping to definition
+;; Note, it should generally be on when installing global packages
+(setenv "GO111MODULE" "off")
 (use-package counsel
   :ensure t
   :init
@@ -448,6 +470,9 @@ nil nil nil)))
     :load-path "/home/theuser/emacs-libvterm"
     :ensure t)
 
+;; for some reason these don't copy over
+(exec-path-from-shell-copy-env "GOPATH")
+(exec-path-from-shell-copy-env "GOROOT")
 
 (defun scratch-buffer ()
     (interactive)
@@ -540,7 +565,13 @@ nil nil nil)))
   erc
   :ensure t)
 
-;; (add-to-list 'erc-sasl-server-regexp-list "irc\\.libera\\.chat")
+(use-package
+  pass
+  :ensure t)
+
+(use-package
+  password-store
+  :ensure t)
 
 ;; Redefine/Override the erc-login() function from the erc package, so that
 ;; it now uses SASL
@@ -566,16 +597,13 @@ nil nil nil)))
        erc-session-user-full-name))
   (erc-update-mode-line))
 
-(use-package
-  password-store
-  :ensure t)
-
 
 (setq libera-pw
       (if (string= system-type "gnu/linux")
           (string-remove-suffix
            "\n" (password-store--run "irc/libera"))
-        "TODO for BSD"))
+        (shell-command-to-string "gopass show irc/libera"
+         )))
 
 (setq erc-autojoin-channels-alist
       '(("Libera.Chat"
@@ -583,7 +611,15 @@ nil nil nil)))
          "#openbsd"
          "#monero"
          "#monero-community"
-         "#gemini")))
+         "#gemini"
+         "#sql"
+         "#chicken"
+         "#scheme"
+         "#clojure"
+         "#fsf"
+         "#go-nuts")))
+
+(add-to-list 'erc-modules 'notifications)
 
 (defun run-irc ()
   (interactive)
