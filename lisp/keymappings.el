@@ -201,12 +201,13 @@
   :states '(normal visual)
   :keymaps '(scheme-mode-map)
   ;;"m" '(:ignore t :which-key "Lisp")
-  "s" '(:ignore t :which-key "Scheme Send")
-  "s e" 'geiser-eval-last-sexp
-  "s d" 'geiser-eval-definition
-  "s D" 'geiser-eval-definition-and-go
-  "s r" 'geiser-eval-region
-  "s R" 'geiser-eval-region-and-go
+  "e" '(:ignore t :which-key "Eval Scheme")
+  "e b" 'geiser-eval-buffer
+  "e e" 'geiser-eval-last-sexp
+  "e d" 'geiser-eval-definition
+  "e D" 'geiser-eval-definition-and-go
+  "e r" 'geiser-eval-region
+  "e R" 'geiser-eval-region-and-go
   "f" '(:ignore t :which-key "Forward")
   "f b" 'paredit-forward-barf-sexp
   "f s" 'paredit-forward-slurp-sexp
