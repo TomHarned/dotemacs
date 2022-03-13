@@ -623,6 +623,7 @@ nil nil nil)))
          "#gemini"
          "#sql"
          "#chicken"
+         "#gerbil"
          "#scheme"
          "#sr.ht"
          "#clojure"
