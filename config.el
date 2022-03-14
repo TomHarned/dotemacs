@@ -512,11 +512,14 @@ nil nil nil)))
 
 ;; Scheme
 ;; Set Chicken scheme as your default
+;; BSD and Linux use different names for this scheme dialect
 (if (string= system-type "berkeley-unix")
-    (setq scheme-program-name "chicken-csi -:c"))
+    (setq scheme-program-name "chicken-csi -:c")
+  (setq scheme-program-name "chicken"))
 
-(if (eq system-type 'berkeley-unix)
-    (setq geiser-chicken-binary "chicken-csi"))
+(if (string= system-type "berkeley-unix")
+    (setq geiser-chicken-binary "chicken-csi")
+  (setq geiser-chicken-binary "csi"))
 
 ;; Load Keymappings
 (add-to-list 'load-path "~/.emacs.d/lisp")
