@@ -33,21 +33,21 @@
 
 ;; The Emacs default split doesn't seem too intuitive for most users.
 (use-package emacs
-  :ensure nil
-  :preface
-  (defun ian/split-and-follow-horizontally ()
-    "Split window below."
-    (interactive)
-    (split-window-below)
-    (other-window 1))
-  (defun ian/split-and-follow-vertically ()
-    "Split window right."
-    (interactive)
-    (split-window-right)
-    (other-window 1))
-  :config
-  (global-set-key (kbd "C-x 2") #'ian/split-and-follow-horizontally)
-  (global-set-key (kbd "C-x 3") #'ian/split-and-follow-vertically))
+ :ensure nil
+ :preface
+ (defun ian/split-and-follow-horizontally ()
+   "Split window below."
+   (interactive)
+   (split-window-below)
+   (other-window 1))
+ (defun ian/split-and-follow-vertically ()
+   "Split window right."
+   (interactive)
+   (split-window-right)
+   (other-window 1))
+ :config
+ (global-set-key (kbd "C-x 2") #'ian/split-and-follow-horizontally)
+ (global-set-key (kbd "C-x 3") #'ian/split-and-follow-vertically))
 
 (use-package delsel
   :ensure nil
@@ -429,10 +429,40 @@ nil nil nil)))
                    (directory-file-name env)))
    (message "Venv set to: %s" venv-name))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; THIS NEEDS PROJECTILE FIRST ;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(use-package pyenv-mode
+  :init
+  (add-to-list 'exec-path "~/.pyenv/shims")
+  (setenv "WORKON_HOME" "~/.pyenv/versions/")
+  :config
+  (pyenv-mode)
+  )
+
+
+(defun pyenv-activate-current-project ()
+  "Automatically activates pyenv version if .python-version file exists."
+  (interactive)
+  (let ((python-version-directory (locate-dominating-file (buffer-file-name) ".python-version")))
+    (if python-version-directory
+        (let* ((pyenv-version-path (f-expand ".python-version" python-version-directory))
+               (pyenv-current-version (s-trim (f-read-text pyenv-version-path 'utf-8))))
+          (pyenv-mode-set pyenv-current-version)
+          (message (concat "Setting virtualenv to " pyenv-current-version))))))
+
+(defvar pyenv-current-version nil nil)
+
+(defun pyenv-init()
+  "Initialize pyenv's current version to the global one."
+  (let ((global-pyenv (replace-regexp-in-string "\n" "" (shell-command-to-string "pyenv global"))))
+    (message (concat "Setting pyenv version to " global-pyenv))
+    (pyenv-mode-set global-pyenv)
+    (setq pyenv-current-version global-pyenv)))
+
+(add-hook 'after-init-hook 'pyenv-init)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; THIS NEEDS PROJECTILE FIRST ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Ivy don't use ^ to start
 (setq ivy-initial-inputs-alist nil)
@@ -664,6 +694,6 @@ nil nil nil)))
 ;;          "~" (eshell/basename (eshell/pwd)))
 ;;      "]\n"
 ;;      (if (= (user-uid) 0) "# " "λ "))))
-
+(evil-mode)
 (provide 'config)
 ;;; Config ends hereu
