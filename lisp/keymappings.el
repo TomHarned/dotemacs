@@ -65,6 +65,7 @@
   "f" '(:ignore t :which-key "File") ;
   "f ," '(:ignore t :which-key "Other file commands") ;
   "f ." 'projectile-find-file
+  "f d" 'delete-backup-files
   "f f" 'counsel-find-file
   "f s" 'save-buffer
   "f S" 'write-file
@@ -200,12 +201,13 @@
   :states '(normal visual)
   :keymaps '(scheme-mode-map)
   ;;"m" '(:ignore t :which-key "Lisp")
-  "s" '(:ignore t :which-key "Scheme Send")
-  "s e" 'scheme-send-last-sexp
-  "s d" 'scheme-send-definition
-  "s D" 'scheme-send-definition-and-go
-  "s r" 'scheme-send-region
-  "s R" 'scheme-send-region-and-go
+  "e" '(:ignore t :which-key "Eval Scheme")
+  "e b" 'geiser-eval-buffer
+  "e e" 'geiser-eval-last-sexp
+  "e d" 'geiser-eval-definition
+  "e D" 'geiser-eval-definition-and-go
+  "e r" 'geiser-eval-region
+  "e R" 'geiser-eval-region-and-go
   "f" '(:ignore t :which-key "Forward")
   "f b" 'paredit-forward-barf-sexp
   "f s" 'paredit-forward-slurp-sexp

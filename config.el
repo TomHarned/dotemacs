@@ -7,42 +7,47 @@
         frame-resize-pixelwise t
         default-directory "~/")
 
-  (tool-bar-mode -1)
-  (menu-bar-mode -1)
+  (with-eval-after-load
+      'package (add-to-list
+                'package-archives
+                '("nongnu" . "https://elpa.nongnu.org/nongnu/")))
+
+(tool-bar-mode -1)
+(menu-bar-mode -1)
 
   ;; better scrolling experience
-  (setq scroll-margin 0
-        scroll-conservatively 101 ; > 100
-        scroll-preserve-screen-position t
-        auto-window-vscroll nil)
+(setq scroll-margin 0
+      scroll-conservatively 101 ; > 100
+      scroll-preserve-screen-position t
+      auto-window-vscroll nil)
 
-  ;; line) numbers
-  (global-display-line-numbers-mode)
+;; line) numbers
+(global-display-line-numbers-mode)
 
-  ;; Always use spaces for indentation
-  (setq-default indent-tabs-mode nil
-                tab-width ian/indent-width)
+;; Always use spaces for indentation
+(setq-default indent-tabs-mode nil
+              tab-width ian/indent-width)
 
-  ;; Omit default startup screen
-  (setq inhibit-startup-screen t))
+;; Omit default startup screen
+(setq inhibit-startup-screen t))
 
 ;; The Emacs default split doesn't seem too intuitive for most users.
 (use-package emacs
-  :ensure nil
-  :preface
-  (defun ian/split-and-follow-horizontally ()
-    "Split window below."
-    (interactive)
-    (split-window-below)
-    (other-window 1))
-  (defun ian/split-and-follow-vertically ()
-    "Split window right."
-    (interactive)
-    (split-window-right)
-    (other-window 1))
-  :config
-  (global-set-key (kbd "C-x 2") #'ian/split-and-follow-horizontally)
-  (global-set-key (kbd "C-x 3") #'ian/split-and-follow-vertically))
+ :ensure nil
+ :preface
+ (defun ian/split-and-follow-horizontally ()
+   "Split window below."
+   (interactive)
+   (split-window-below)
+   (other-window 1))
+ (defun ian/split-and-follow-vertically ()
+   "Split window right."
+   (interactive)
+   (split-window-right)
+   (other-window 1))
+ :config
+ (global-set-key (kbd "C-x 2") #'ian/split-and-follow-horizontally)
+ (global-set-key (kbd "C-x 3") #'ian/split-and-follow-vertically))
 
 (use-package delsel
   :ensure nil
@@ -360,6 +365,25 @@
   (setq ivy-use-virtual-buffers t)
 (setq enable-recursive-minibuffers t))
 
+;; Golang
+(use-package go-mode
+  :ensure t)
+
+;; Set up before-save hooks to format buffer and add/delete imports.
+(defun lsp-go-install-save-hooks ()
+  (add-hook 'before-save-hook #'lsp-format-buffer t t)
+  (add-hook 'before-save-hook #'lsp-organize-imports t t))
+
+(add-hook 'go-mode-hook #'lsp-go-install-save-hooks)
+
+;; Start LSP Mode and YASnippet mode
+(add-hook 'go-mode-hook #'lsp-deferred)
+(add-hook 'go-mode-hook #'yas-minor-mode)
+
+;; This environment variable is set to "on" by default. Turn it off to enable
+;; jumping to definition
+;; Note, it should generally be on when installing global packages
+(setenv "GO111MODULE" "off")
 (use-package counsel
   :ensure t
   :init
@@ -405,10 +429,40 @@ nil nil nil)))
                    (directory-file-name env)))
    (message "Venv set to: %s" venv-name))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; THIS NEEDS PROJECTILE FIRST ;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(use-package pyenv-mode
+  :init
+  (add-to-list 'exec-path "~/.pyenv/shims")
+  (setenv "WORKON_HOME" "~/.pyenv/versions/")
+  :config
+  (pyenv-mode)
+  )
+
+
+(defun pyenv-activate-current-project ()
+  "Automatically activates pyenv version if .python-version file exists."
+  (interactive)
+  (let ((python-version-directory (locate-dominating-file (buffer-file-name) ".python-version")))
+    (if python-version-directory
+        (let* ((pyenv-version-path (f-expand ".python-version" python-version-directory))
+               (pyenv-current-version (s-trim (f-read-text pyenv-version-path 'utf-8))))
+          (pyenv-mode-set pyenv-current-version)
+          (message (concat "Setting virtualenv to " pyenv-current-version))))))
+
+(defvar pyenv-current-version nil nil)
+
+(defun pyenv-init()
+  "Initialize pyenv's current version to the global one."
+  (let ((global-pyenv (replace-regexp-in-string "\n" "" (shell-command-to-string "pyenv global"))))
+    (message (concat "Setting pyenv version to " global-pyenv))
+    (pyenv-mode-set global-pyenv)
+    (setq pyenv-current-version global-pyenv)))
+
+(add-hook 'after-init-hook 'pyenv-init)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; THIS NEEDS PROJECTILE FIRST ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Ivy don't use ^ to start
 (setq ivy-initial-inputs-alist nil)
@@ -442,8 +496,13 @@ nil nil nil)))
 
 (use-package general)
 
-(use-package vterm)
+(use-package vterm
+    :load-path "/home/theuser/emacs-libvterm"
+    :ensure t)
 
+;; for some reason these don't copy over
+(exec-path-from-shell-copy-env "GOPATH")
+(exec-path-from-shell-copy-env "GOROOT")
 
 (defun scratch-buffer ()
     (interactive)
@@ -480,6 +539,18 @@ nil nil nil)))
 
 (use-package paredit
   :ensure t)
+
+;; Scheme
+;; Set Chicken scheme as your default
+;; BSD and Linux use different names for this scheme dialect
+(if (string= system-type "berkeley-unix")
+    (setq scheme-program-name "chicken-csi -:c")
+  (setq scheme-program-name "chicken"))
+
+(if (string= system-type "berkeley-unix")
+    (setq geiser-chicken-binary "chicken-csi")
+  (setq geiser-chicken-binary "csi"))
+
 ;; Load Keymappings
 (add-to-list 'load-path "~/.emacs.d/lisp")
 (load-library "functions.el")
@@ -487,6 +558,127 @@ nil nil nil)))
 
 (add-hook 'after-init-hook 'global-company-mode)
 
+;; MU4E
+
+;; Wrap lines at 72 chars
+(defun th-mu4e-compose-mode-hook ()
+  (setq fill-column 72))
+
+(add-hook 'mu4e-compose-mode-hook 'th-mu4e-compose-mode-hook)
+
+;; avoid those UID erros
+(setq mu4e-change-filenames-when-moving t)
+
+;; Receiving mail
+(setq
+  mu4e-sent-folder   "/disroot/Sent"       ;; folder for sent messages
+  mu4e-drafts-folder "/disroot/Drafts"     ;; unfinished messages
+  mu4e-trash-folder  "/disroot/Trash"      ;; trashed messages
+  mu4e-refile-folder "/disroot/Archive")
+
+(setq mu4e-get-mail-command "mbsync -a")
+
+;; When set to nil, maial must me manually retrieved
+(setq mu4e-update-interval nil)
+
+;; Sending mail
+;; tell message-mode how to send mail
+(setq message-send-mail-function 'smtpmail-send-it)
+;; if our mail server lives at smtp.example.org; if you have a local
+;; mail-server, simply use 'localhost' here.
+
+(setq mu4e-sent-folder "/disroot/Sent"
+      ;; mu4e-sent-messages-behavior 'delete ;; Unsure how this should be configured
+      user-mail-address "irontom@disroot.org"
+      user-full-name "irontom"
+      smtpmail-local-domain (system-name)
+      smtpmail-smtp-user "irontom"
+      smtpmail-default-smtp-server "disroot.org"
+      smtpmail-smtp-server "disroot.org"
+      ;;smtpmail-stream-type 'starttls
+      smtpmail-smtp-service 587)
+;; 587 for smtp
+;; 465 for smtps
+
+;; IRC/ERC
+
+;; Add SASL server to list of SASL servers (start a new list, if it did not exist)
+(use-package
+  erc
+  :ensure t)
+
+(use-package
+  pass
+  :ensure t)
+
+(use-package
+  password-store
+  :ensure t)
+
+;; Redefine/Override the erc-login() function from the erc package, so that
+;; it now uses SASL
+(defun erc-login ()
+  "Perform user authentication at the IRC server. (PATCHED)"
+  (erc-log (format "login: nick: %s, user: %s %s %s :%s"
+           (erc-current-nick)
+           (user-login-name)
+           (or erc-system-name (system-name))
+           erc-session-server
+           erc-session-user-full-name))
+  (if erc-session-password
+      (erc-server-send (format "PASS %s" erc-session-password))
+    (message "Logging in without password"))
+  (when (and (featurep 'erc-sasl) (erc-sasl-use-sasl-p))
+    (erc-server-send "CAP REQ :sasl"))
+  (erc-server-send (format "NICK %s" (erc-current-nick)))
+  (erc-server-send
+   (format "USER %s %s %s :%s"
+       ;; hacked - S.B.
+       (if erc-anonymous-login erc-email-userid (user-login-name))
+       "0" "*"
+       erc-session-user-full-name))
+  (erc-update-mode-line))
+
+
+(setq libera-pw
+      (if (string= system-type "gnu/linux")
+          (string-remove-suffix
+           "\n" (password-store--run "irc/libera"))
+        (shell-command-to-string "gopass show irc/libera"
+         )))
+
+(setq erc-autojoin-channels-alist
+      '(("Libera.Chat"
+         "#emacs"
+         "#openbsd"
+         "#monero"
+         "#monero-community"
+         "#gemini"
+         "#sql"
+         "#chicken"
+         "#gerbil"
+         "#scheme"
+         "#sr.ht"
+         "#clojure"
+         "#fsf"
+         "#go-nuts")))
+
+(add-to-list 'erc-modules 'notifications)
+
+(defun run-irc ()
+  (interactive)
+  (erc-tls
+   :server "irc.libera.chat"
+   :port 6697
+   :nick "irontom"
+   :full-name "irontom"
+   :password libera-pw
+   ))
+
+
+(if (string= system-type "berkeley-unix")
+    (setenv "PS1" "${PWD##*/} λ "))
+;;(setq scheme-program-name "csi")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;                                   ;;
@@ -502,6 +694,6 @@ nil nil nil)))
 ;;          "~" (eshell/basename (eshell/pwd)))
 ;;      "]\n"
 ;;      (if (= (user-uid) 0) "# " "λ "))))
-
+(evil-mode)
 (provide 'config)
 ;;; Config ends hereu

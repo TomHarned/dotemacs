@@ -55,9 +55,19 @@
   (interactive)
   (projectile-find-file-in-directory "~/.emacs.d"))
 
+(defun delete-backup-files ()
+  (interactive)
+  (if (null (directory-files "." t "^\#"))
+    (message "All Backup files in %s deleted"
+      (file-name-directory (buffer-file-name)))
+    (let ((files (directory-files "." t "^\#")))
+            (file-name-directory (buffer-file-name))
+        (delete-file (car files))
+        (delete-backup-files))))
 
 (provide 'functions)
 ;;; functionsl.el ends here
+
 
 
 ;; Config ends here
