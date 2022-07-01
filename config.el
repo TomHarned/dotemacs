@@ -534,6 +534,11 @@ nil nil nil)))
    ;; Corrects (and improves) org-mode's native fontification.
    (doom-themes-org-config))
 
+;; (use-package nofrils-acme-theme
+;;   :ensure t
+;;   :config
+;;   (load-theme 'nofrils-acme t nil))
+
 (use-package mood-line
    :hook (after-init . mood-line-mode))
 
@@ -647,6 +652,7 @@ nil nil nil)))
         (shell-command-to-string "gopass show irc/libera"
          )))
 
+
 (setq erc-autojoin-channels-alist
       '(("Libera.Chat"
          "#emacs"
@@ -675,6 +681,27 @@ nil nil nil)))
    :password libera-pw
    ))
 
+(use-package emms
+  :ensure t
+  :config
+  (setq emms-source-file-default-directory "~/Music/")
+  (require 'emms-setup)
+  (emms-all)
+  (emms-default-players))
+
+(load-file "~/.emacs.d/lisp/emms-browser.el")
+
+(use-package pianobar
+  :ensure t)
+
+(setq pianobar-username "thomas.harned@gmail.com")
+(setq pianobar-station "20") ;; Grateful dead
+
+(setq pianobar-password
+      (if (string= system-type "gnu/linux")
+          (string-remove-suffix
+           "\n" (password-store--run "pandora"))
+        (shell-command-to-string "gopass show pandora")))
 
 (if (string= system-type "berkeley-unix")
     (setenv "PS1" "${PWD##*/} λ "))

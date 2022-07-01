@@ -65,6 +65,42 @@
         (delete-file (car files))
         (delete-backup-files))))
 
+(defun youtube-dl (url)
+  "Download the specified URL from YouTube as an mp3"
+  (interactive "sEnter URL: ")
+  (let ((dir default-directory)
+        (com (concat "youtube-dl -xq --audio-format mp3" " " url)))
+  (progn
+    (cd "~/Music/")
+    (shell-command com)
+    (cd dir))))
+
+
+(defun youtube-dl-from-list (url-list)
+  "Download each youtube url in a list"
+  (if (eq nil url-list) (message "All done!")
+    (progn
+      (shell-command
+       (concat
+        "youtube-dl -xq --audio-format mp3" " "
+        (car url-list)))
+      (youtube-dl-from-list (cdr url-list)))))
+
+(defun read-lines (filePath)
+  "Return a list of lines of a file at filePath."
+  (with-temp-buffer
+    (insert-file-contents filePath)
+    (split-string (buffer-string) "\n" t)))
+
+(defun youtube-dl-multi (filePath)
+  (interactive "sEnter Filepath of URLs to Download: ")
+  (let ((lines (read-lines filePath))
+        (dir default-directory))
+    (progn
+      (cd "~/Music/")
+      (youtube-dl-from-list lines)
+      (cd dir))))
+
 (provide 'functions)
 ;;; functionsl.el ends here
 
